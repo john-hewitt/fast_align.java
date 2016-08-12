@@ -8,6 +8,8 @@ If you use this software, please cite:
 
 The source code in this repository is provided under the terms of the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
 
+ - Note that until we remove the GNU `getopt` depenency, the package is not compliant with the Apache license.
+
 # Input format
 
 Input to `fast_align` must be tokenized and aligned into parallel sentences. Each line is a source language sentence and its target language translation, separated by a triple pipe symbol (`|||`). An example is as follows.
@@ -18,10 +20,15 @@ Input to `fast_align` must be tokenized and aligned into parallel sentences. Eac
 
 # Compiling and using `fast_align`
 
-This Java port of `fast_align` requires only a Java compiler; it can most easily be compiled using Apache Ant by typing `ant` at the command line prompt.
+This Java port of `fast_align` requires only a Java compiler; it can most easily be compiled using Apache Maven by typing `mvn package` at the command line prompt.
 
 Run `java -jar fast_align.jar` to see a list of command line options. Here is an example invocation:
 
     java -jar fast_align.jar -i text.fr-en -d -o -v > forward.align
 
+# Authorship
+
+ - Original C implementation made by [clab](https://github.com/clab)
+ - Direct port to Java made by [Lane Schwartz]
+ - Further modifications and maintenance by John Hewitt
 
