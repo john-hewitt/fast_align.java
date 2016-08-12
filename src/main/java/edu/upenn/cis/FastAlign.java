@@ -14,7 +14,7 @@
 //
 // Ported to Java by Lane Schwartz
 //
-package edu.cmu.clab;
+package edu.upenn.cis;
 
 import java.io.File;
 import java.io.FileNotFoundException;
