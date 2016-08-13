@@ -13,6 +13,7 @@
 // limitations under the License.
 //
 // Ported to Java by Lane Schwartz
+// Modifications by John Hewitt
 //
 package edu.upenn.cis;
 
@@ -96,6 +97,13 @@ public class FastAlign {
 		this.d = new Dict();
 	}
 
+	/**
+	 * Populates source and target token lists with integerized tokens.
+	 * 
+	 * @param line  a line of the bitext
+	 * @param src  the list to be populated with source tokens
+	 * @param tgt  the list to be populated with target tokens
+	 */
 	private void ParseLine(final String line,
 			ArrayList<Integer> src,
 			ArrayList<Integer> trg) {
@@ -116,6 +124,11 @@ public class FastAlign {
 		}
 	}
 
+	/**
+	 * Initialize a FastAlign instance with options specified via the command line
+	 * @param argv  the command line arguments
+	 * @returns  FastAlign instance with the specified options
+	 */
 	public static FastAlign InitCommandLine(String[] argv) {
 		LongOpt[] options = {
 				new LongOpt("input",                     LongOpt.REQUIRED_ARGUMENT, null,               'i' ),
@@ -183,7 +196,10 @@ public class FastAlign {
 
 
 
-
+	/**
+	 * Prints alignments for options specified by command line arguments.
+	 * @param argv  parameters to be used by FastAlign.
+	 */
 	public static void main(String[] argv) {
 
 		FastAlign align = FastAlign.InitCommandLine(argv);
@@ -258,7 +274,7 @@ public class FastAlign {
 				++lc;
 				if (lc % 1000 == 0) { System.err.print('.'); flag = true; }
 				if (lc %50000 == 0) { System.err.println(" [" + lc + "]\n"); System.err.flush(); flag = false; }
-				src.clear(); trg.clear();
+				src.clear(); trg.clear(); // TODO this is redundant; src and tgt cleared in ParseLine
 				align.ParseLine(line, src, trg);
 				if (align.is_reverse) {
 					ArrayList<Integer> tmp = src;

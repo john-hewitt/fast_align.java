@@ -13,18 +13,19 @@
 // limitations under the License.
 //
 // Ported to Java by Lane Schwartz
+// Modifications by John Hewitt
 //
 package edu.upenn.cis;
 
 public class DiagonalAlignment {
 	
 	/**
-	 * 
+	 * Computes the unnormalized probability of an (i,j) alignment conditioned on a bias-to-diagonal parameter.
 	 * @param i Target index
 	 * @param j Source index
 	 * @param m Target length
 	 * @param n Source length
-	 * @param alpha
+	 * @param alpha bias of alignments towards a perfect diagonal.
 	 * @return
 	 */
 	public static double UnnormalizedProb(final int i, final int j, final int m, final int n, final double alpha) {
@@ -36,7 +37,7 @@ public class DiagonalAlignment {
 	}
 
 	/**
-	 * 
+	 * Computes the normalizing sum of the data likelihood under the log-linear model in O(1)
 	 * @param i Target index
 	 * @param j Source index
 	 * @param m Target length
@@ -63,7 +64,7 @@ public class DiagonalAlignment {
 	}
 
 	/**
-	 * 
+	 * Calculates the normalizing sum of the derivative of the log-partition function in O(1) 
 	 * @param i Target index
 	 * @param j Source index
 	 * @param m Target length
@@ -93,18 +94,27 @@ public class DiagonalAlignment {
 	}
 
 	/**
-	 * 
+	 * Calculates the h(*) value of given source and target indices based on the source
+	 * and target sentence lengths. 
 	 * @param i Target index
 	 * @param j Source index
 	 * @param m Target length
 	 * @param n Source length
-	 * @param alpha
-	 * @return
+	 * @return 
 	 */	
 	public static double Feature(final int i, final int j, final int m, final int n) {
 		return -Math.abs(((double) j) / n - ((double) i) / m);
 	}
 
+	/**
+	 * Calculates the sum of the first n values of an arithemtico-geometric series in O(1). 
+	 * @param a_1  The 0th value of the arithmetic series
+	 * @param g_1  The 0th value of the geometric series
+	 * @param r  The ratio of the geometric series
+	 * @param d  The difference of the arithmetic series
+	 * @param n  The index of the arithmetico-geometric series at which to end.
+	 * @return
+	 */
 	private static double arithmetico_geometric_series(final double a_1, final double g_1, final double r, final double d, final int n) {
 		final double g_np1 = g_1 * Math.pow(r, n);
 		final double a_n = d * (n - 1) + a_1;
