@@ -37,7 +37,7 @@ public class DiagonalAlignment {
 	}
 
 	/**
-	 * Computes the normalizing sum of the data likelihood under the log-linear model in O(1)
+	 * Computes the normalizing sum of the log-partition function in O(1)
 	 * @param i Target index
 	 * @param j Source index
 	 * @param m Target length
@@ -73,7 +73,7 @@ public class DiagonalAlignment {
 	 * @return
 	 */	
 	public static double ComputeDLogZ(final int i, final int m, final int n, final double alpha) {
-		final double z = ComputeZ(i, n, m, alpha);
+		final double z = ComputeZ(i, m, n, alpha);
 		final double split = ((double) i) * n / m;
 		final int floor = (int) Math.floor(split);
 		final int ceil = floor + 1;
