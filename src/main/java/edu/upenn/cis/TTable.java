@@ -13,6 +13,7 @@
 // limitations under the License.
 //
 // Ported to Java by Lane Schwartz
+// Modifications by John Hewitt
 //
 package edu.upenn.cis;
 

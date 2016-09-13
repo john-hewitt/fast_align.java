@@ -242,6 +242,7 @@ public class FastAlign {
 		double tot_len_ratio = 0;
 		double mean_srclen_multiplier = 0;
 		List<Double> probs = new ArrayList<Double>();;
+		// E-M Iterations Loop TODO move this into a method?
 		for (int iter = 0; iter < align.iterations || (iter==0 && align.iterations==0); ++iter) {
 			final boolean final_iteration = (iter >= (align.iterations - 1));
 			System.err.println("ITERATION " + (iter + 1) + (final_iteration ? " (FINAL)" : ""));
@@ -269,26 +270,31 @@ public class FastAlign {
 			double c0 = 0;
 			double emp_feat = 0;
 			double toks = 0;
+			// Iterate over each line of the input file
 			while (in.hasNextLine()) {
 				line = in.nextLine();
 				++lc;
 				if (lc % 1000 == 0) { System.err.print('.'); flag = true; }
 				if (lc %50000 == 0) { System.err.println(" [" + lc + "]\n"); System.err.flush(); flag = false; }
 				src.clear(); trg.clear(); // TODO this is redundant; src and tgt cleared in ParseLine
+				// Integerize and split source and target lines.
 				align.ParseLine(line, src, trg);
 				if (align.is_reverse) {
 					ArrayList<Integer> tmp = src;
 					src = trg;
 					trg = tmp;
 				}
+				// TODO Empty lines break the parser. Should this be true?
 				if (src.size() == 0 || trg.size() == 0) {
 					System.err.println("Error in line " + lc + "\n" + line);
 					System.exit(1);
 				}
-				if (iter == 0)
+				if (iter == 0) {
 					tot_len_ratio += ((double) trg.size()) / ((double) src.size());
+				}
 				denom += trg.size();
 				probs.clear();
+				// Add to pair length counts only if first iteration.
 				if (iter == 0) {
 					Pair pair = new Pair(trg.size(), src.size());
 					Integer value = size_counts.get(pair);
@@ -297,21 +303,24 @@ public class FastAlign {
 				}
 				boolean first_al = true;  // used when printing alignments
 				toks += trg.size();
+				// Iterate through the English tokens
 				for (int j = 0; j < trg.size(); ++j) {
 					final int f_j = trg.get(j);
 					double sum = 0;
 					double prob_a_i = 1.0 / (src.size() + (use_null ? 1 : 0));  // uniform (model 1)
 					if (use_null) {
-						if (align.favor_diagonal) prob_a_i = align.prob_align_null;
+						if (align.favor_diagonal) {
+							prob_a_i = align.prob_align_null;
+						}
 						probs.add(0, s2t.prob(kNULL, f_j) * prob_a_i);
 						sum += probs.get(0);
 					}
 					double az = 0;
 					if (align.favor_diagonal)
-						az = DiagonalAlignment.ComputeZ(j+1, trg.size(), src.size(), align.diagonal_tension) / prob_align_not_null;
+						az = DiagonalAlignment.computeZ(j+1, trg.size(), src.size(), align.diagonal_tension) / prob_align_not_null;
 					for (int i = 1; i <= src.size(); ++i) {
 						if (align.favor_diagonal)
-							prob_a_i = DiagonalAlignment.UnnormalizedProb(j + 1, i, trg.size(), src.size(), align.diagonal_tension) / az;
+							prob_a_i = DiagonalAlignment.unnormalizedProb(j + 1, i, trg.size(), src.size(), align.diagonal_tension) / az;
 						probs.add(i, s2t.prob(src.get(i-1), f_j) * prob_a_i);
 						sum += probs.get(i);
 					}
@@ -344,7 +353,7 @@ public class FastAlign {
 						for (int i = 1; i <= src.size(); ++i) {
 							final double p = probs.get(i) / sum;
 							s2t.Increment(src.get(i-1), f_j, p);
-							emp_feat += DiagonalAlignment.Feature(j, i, trg.size(), src.size()) * p;
+							emp_feat += DiagonalAlignment.feature(j, i, trg.size(), src.size()) * p;
 						}
 					}
 					likelihood += Math.log(sum);
@@ -378,7 +387,7 @@ public class FastAlign {
 							Map.Entry<Pair,Integer> entry = it.next();
 							final Pair p = entry.getKey();
 							for (int j = 1; j <= p.first; ++j)
-								mod_feat += entry.getValue() * DiagonalAlignment.ComputeDLogZ(j, p.first, p.second, align.diagonal_tension);
+								mod_feat += entry.getValue() * DiagonalAlignment.computeDLogZ(j, p.first, p.second, align.diagonal_tension);
 						}
 						mod_feat /= toks;
 						System.err.println("  " + ii + 1 + "  model al-feat: " + mod_feat + " (tension=" + align.diagonal_tension + ")");

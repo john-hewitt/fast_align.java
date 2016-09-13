@@ -28,12 +28,12 @@ public class DiagonalAlignment {
 	 * @param alpha bias of alignments towards a perfect diagonal.
 	 * @return
 	 */
-	public static double UnnormalizedProb(final int i, final int j, final int m, final int n, final double alpha) {
+	public static double unnormalizedProb(final int i, final int j, final int m, final int n, final double alpha) {
 		assert(i > 0);
 		assert(n > 0);
 		assert(m >= i);
 		assert(n >= j);
-		return Math.exp(Feature(i, j, m, n) * alpha);
+		return Math.exp(feature(i, j, m, n) * alpha);
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class DiagonalAlignment {
 	 * @param alpha
 	 * @return
 	 */	
-	public static double ComputeZ(final int i, final int m, final int n, final double alpha) {
+	public static double computeZ(final int i, final int m, final int n, final double alpha) {
 		assert(i > 0);
 		assert(n > 0);
 		assert(m >= i);
@@ -57,9 +57,9 @@ public class DiagonalAlignment {
 		double ezt = 0;
 		double ezb = 0;
 		if (num_top != 0)
-			ezt = UnnormalizedProb(i, ceil, m, n, alpha) * (1.0 - Math.pow(ratio, num_top)) / (1.0 - ratio);
+			ezt = unnormalizedProb(i, ceil, m, n, alpha) * (1.0 - Math.pow(ratio, num_top)) / (1.0 - ratio);
 		if (floor != 0)
-			ezb = UnnormalizedProb(i, floor, m, n, alpha) * (1.0 - Math.pow(ratio, floor)) / (1.0 - ratio);
+			ezb = unnormalizedProb(i, floor, m, n, alpha) * (1.0 - Math.pow(ratio, floor)) / (1.0 - ratio);
 		return ezb + ezt;
 	}
 
@@ -72,8 +72,8 @@ public class DiagonalAlignment {
 	 * @param alpha
 	 * @return
 	 */	
-	public static double ComputeDLogZ(final int i, final int m, final int n, final double alpha) {
-		final double z = ComputeZ(i, m, n, alpha);
+	public static double computeDLogZ(final int i, final int m, final int n, final double alpha) {
+		final double z = computeZ(i, m, n, alpha);
 		final double split = ((double) i) * n / m;
 		final int floor = (int) Math.floor(split);
 		final int ceil = floor + 1;
@@ -83,11 +83,11 @@ public class DiagonalAlignment {
 		double pct = 0;
 		double pcb = 0;
 		if (num_top != 0) {
-			pct = arithmetico_geometric_series(Feature(i, ceil, m, n), UnnormalizedProb(i, ceil, m, n, alpha), ratio, d, num_top);
+			pct = arithmeticoGeometricSeries(feature(i, ceil, m, n), unnormalizedProb(i, ceil, m, n, alpha), ratio, d, num_top);
 			//cerr << "PCT = " << pct << endl;
 		}
 		if (floor != 0) {
-			pcb = arithmetico_geometric_series(Feature(i, floor, m, n), UnnormalizedProb(i, floor, m, n, alpha), ratio, d, floor);
+			pcb = arithmeticoGeometricSeries(feature(i, floor, m, n), unnormalizedProb(i, floor, m, n, alpha), ratio, d, floor);
 			//cerr << "PCB = " << pcb << endl;
 		}
 		return (pct + pcb) / z;
@@ -102,7 +102,7 @@ public class DiagonalAlignment {
 	 * @param n Source length
 	 * @return 
 	 */	
-	public static double Feature(final int i, final int j, final int m, final int n) {
+	public static double feature(final int i, final int j, final int m, final int n) {
 		return -Math.abs(((double) j) / n - ((double) i) / m);
 	}
 
@@ -115,7 +115,7 @@ public class DiagonalAlignment {
 	 * @param n  The index of the arithmetico-geometric series at which to end.
 	 * @return
 	 */
-	private static double arithmetico_geometric_series(final double a_1, final double g_1, final double r, final double d, final int n) {
+	 static double arithmeticoGeometricSeries(final double a_1, final double g_1, final double r, final double d, final int n) {
 		final double g_np1 = g_1 * Math.pow(r, n);
 		final double a_n = d * (n - 1) + a_1;
 		final double x_1 = a_1 * g_1;
