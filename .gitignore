@@ -1,4 +1,5 @@
 bin/
 build/
 fast_align.jar
-/target/
+target/
+evaluation/

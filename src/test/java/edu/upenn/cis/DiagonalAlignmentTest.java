@@ -42,16 +42,6 @@ public class DiagonalAlignmentTest {
 	
 	@Test
 	public void testArithmeticoGemoetricSeriesCorrectness() {
-//		double a_1 = -0.09999999999999998;
-//		double gJdown_lplus1 = 0.9512294245007139;
-//		double gJdown_1 = 0.9900498337491681;
-//		double gJup_1 = 0.9900498337491681;
-//		double gJup_lplus1 = 0.9323938199059482;
-//		double aJup_l = -0.13999999999999999;
-//		double aJdown_l = -0.13999999999999999;
-//		double r = 0.9801986733067553;
-//		double d = -1/n;
-//		double expected = (aJup_l*gJup_lplus1)/(1- r) + d * (gJup_lplus1 - gJup_1 * r)/Math.pow((1-r), 2);
 		double r = 0.9801986733067553;
 		double d = -1/n;
 		double a_1 = DiagonalAlignment.feature(i, 2, m, n);
