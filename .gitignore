@@ -3,3 +3,7 @@ build/
 fast_align.jar
 target/
 evaluation/
+.settings/
+.classpath
+.project
+dependency-reduced-pom.xml
