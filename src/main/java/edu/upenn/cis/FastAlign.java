@@ -173,6 +173,8 @@ public class FastAlign {
 		try {
 			line = parser.parse(ops, argv);
 		} catch (ParseException exp) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp( "java -jar fast_align-1.0_SNAPSHOT.jar -i [PARALLEL_CORPUS] [OPTIONS]", ops );
 			System.err.println( "Invalid command line arguments: " + exp.getMessage() );
 			System.exit(1);
 		}
