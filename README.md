@@ -20,11 +20,11 @@ Input to `fast_align` must be tokenized and aligned into parallel sentences. Eac
 
 # Compiling and using `fast_align`
 
-This Java port of `fast_align` requires only a Java compiler; it can most easily be compiled using Apache Maven by typing `mvn package` at the command line prompt.
+This Java port of `fast_align` requires Apache Maven ; it can most easily be compiled using Maven by typing `mvn package` at the command line prompt.
 
-Run `java -jar fast_align.jar` to see a list of command line options. Here is an example invocation:
+Run `java -jar fast_align-1.0-SNAPSHOT.jar` to see a list of command line options. Here is an example invocation:
 
-    java -jar fast_align.jar -i text.fr-en -d -o -v > forward.align
+    java -jar target/fast_align-1.0-SNAPSHOT.jar -i text.fr-en -d -o -v > forward.align
 
 # Authorship
 
