@@ -30,5 +30,5 @@ Run `java -jar fast_align-1.0-SNAPSHOT.jar` to see a list of command line option
 
  - Original C implementation made by [clab](https://github.com/clab)
  - Direct port to Java made by [Lane Schwartz](https://github.com/dowobeha/fast_align.java)
- - Further modifications and maintenance by John Hewitt
+ - Further modifications and maintenance by [John Hewitt](https://www.seas.upenn.edu/~johnhew)
 
