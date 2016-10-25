@@ -26,8 +26,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import gnu.getopt.Getopt;
-import gnu.getopt.LongOpt;
+import java.lang.Integer;
+
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.ParseException;
 
 public class FastAlign {
 
@@ -124,27 +131,7 @@ public class FastAlign {
 		}
 	}
 
-	/**
-	 * Initialize a FastAlign instance with options specified via the command line
-	 * @param argv  the command line arguments
-	 * @returns  FastAlign instance with the specified options
-	 */
-	public static FastAlign InitCommandLine(String[] argv) {
-		LongOpt[] options = {
-				new LongOpt("input",                     LongOpt.REQUIRED_ARGUMENT, null,               'i' ),
-				new LongOpt("reverse",                   LongOpt.NO_ARGUMENT,       new StringBuffer(),  1  ),
-				new LongOpt("iterations",                LongOpt.REQUIRED_ARGUMENT, null,               'I' ),
-				new LongOpt("favor_diagonal",            LongOpt.NO_ARGUMENT,       new StringBuffer(),  0  ),
-				new LongOpt("p0",                        LongOpt.REQUIRED_ARGUMENT, null,               'p' ),
-				new LongOpt("diagonal_tension",          LongOpt.REQUIRED_ARGUMENT, null,               'T' ),
-				new LongOpt("optimize_tension",          LongOpt.NO_ARGUMENT,       new StringBuffer(),  1  ),
-				new LongOpt("variational_bayes",         LongOpt.NO_ARGUMENT,       new StringBuffer(),  1  ),
-				new LongOpt("alpha",                     LongOpt.REQUIRED_ARGUMENT, null,               'a' ),
-				new LongOpt("no_null_word",              LongOpt.NO_ARGUMENT,       new StringBuffer(),  1  ),
-				new LongOpt("conditional_probabilities", LongOpt.REQUIRED_ARGUMENT, null,               'c' ),
-				new LongOpt("existing_probabilities",    LongOpt.REQUIRED_ARGUMENT, null,               'e' )		
-		};
-
+	public static FastAlign initCommandLine(String[] argv) {
 		String input = "";
 		String conditional_probability_filename = "";
 		String existing_probability_filename = "";
@@ -156,29 +143,73 @@ public class FastAlign {
 		boolean optimize_tension = false;
 		boolean variational_bayes = false;
 		double alpha = 0.01;
-		boolean no_null_word = false;	
-
-		Getopt g = new Getopt("fast_align", argv, "i:rI:dp:T:ova:Nc:e:", options);
-		while (true) {
-			int c = g.getopt();
-			if (c == -1) break;
-			switch(c) {
-			case 'i': input = g.getOptarg(); break;
-			case 'r': is_reverse = true; break;
-			case 'I': iterations = Integer.valueOf(g.getOptarg()); break;
-			case 'd': favor_diagonal = true; break;
-			case 'p': prob_align_null = Double.valueOf(g.getOptarg()); break;
-			case 'T': diagonal_tension = Double.valueOf(g.getOptarg()); break;
-			case 'o': optimize_tension = true; break;
-			case 'v': variational_bayes = true; break;
-			case 'a': alpha = Double.valueOf(g.getOptarg()); break;
-			case 'N': no_null_word = true; break;
-			case 'c': conditional_probability_filename = g.getOptarg(); break;
-			case 'e': existing_probability_filename = g.getOptarg(); break;
-			default: return null;
-			}
+		boolean no_null_word = false;
+		
+		Options ops = new Options();
+		ops.addOption(Option.builder("i")
+				.hasArg()
+				.desc("[REQ] Input parallel corpus")
+				.required()
+				.build());
+		ops.addOption("v", false, "[USE] Use Dirichlet prior on lexical translation distributions");
+		ops.addOption("d", false, "[USE] Favor alignment points close to the monotonic diagonal");
+		ops.addOption("o", false, "[USE] Optimize how close to the diagonal alignment points should be.");
+		ops.addOption("r", false, "Run alignment in reverse (condition on target and predict source");
+		ops.addOption("c", false, "Output conditional probability table");
+		ops.addOption("e", true, "Start with existing conditional probability table");
+		ops.addOption("I", true, "number of iterations in EM training (default = 5)");
+		ops.addOption("p", true, "p_null parameter");
+//		ops.addOption( Option.builder("p")
+//                .desc( "use SIZE-byte blocks" )
+//                .hasArg()
+//                .type(Integer.class)
+//                .build() );
+		ops.addOption("N", false, "No null word");
+		ops.addOption("a", true, "alpha parameter for optional Dirichlet prior (default = 0.01");
+		ops.addOption("T", true, "starting lambda for diagonal distance parameter");
+		
+		CommandLineParser parser = new DefaultParser();
+		CommandLine line = null;
+		try {
+			line = parser.parse(ops, argv);
+		} catch (ParseException exp) {
+			System.err.println( "Invalid command line arguments: " + exp.getMessage() );
+			System.exit(1);
 		}
-		if (input.length() == 0) return null;
+		if (line.hasOption("i")) {
+			input = line.getOptionValue("i");
+		}
+		if (line.hasOption("v")) {
+			variational_bayes = true;
+		}
+		if (line.hasOption("d")) {
+			favor_diagonal = true;
+		}
+		if (line.hasOption("p")) {
+			prob_align_null = Double.valueOf(line.getOptionValue("p"));
+		}
+		if (line.hasOption("T")) {
+			diagonal_tension = Double.valueOf(line.getOptionValue("T"));
+		}
+		if (line.hasOption("o")) {
+			optimize_tension = true;
+		}
+		if (line.hasOption("v")) {
+			variational_bayes = true;
+		}
+		if (line.hasOption("a")) {
+			alpha = Double.valueOf(line.getOptionValue("a"));
+		}
+		if (line.hasOption("N")) {
+			no_null_word = true;
+		}
+		if (line.hasOption("c")) {
+			conditional_probability_filename = line.getOptionValue("c");
+		}
+		if (line.hasOption("e")) {
+			existing_probability_filename = line.getOptionValue("e");
+		}
+		
 		return new FastAlign(
 				input,
 				conditional_probability_filename,
@@ -193,16 +224,15 @@ public class FastAlign {
 				alpha,
 				no_null_word);
 	}
-
-
-
+	
+	
 	/**
 	 * Prints alignments for options specified by command line arguments.
 	 * @param argv  parameters to be used by FastAlign.
 	 */
 	public static void main(String[] argv) {
 
-		FastAlign align = FastAlign.InitCommandLine(argv);
+		FastAlign align = FastAlign.initCommandLine(argv);
 		if (align==null) {
 			System.err.println(
 					"Usage: java " + FastAlign.class.getCanonicalName() + " -i file.fr-en\n"

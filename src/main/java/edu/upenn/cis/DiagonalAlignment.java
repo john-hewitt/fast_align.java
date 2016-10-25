@@ -121,7 +121,7 @@ public class DiagonalAlignment {
 		final double x_1 = a_1 * g_1;
 		final double g_2 = g_1 * r;
 		final double rm1 = 1 - r;
-		return (a_n * g_np1 - x_1) / rm1 + d*(g_np1 - g_2) / (rm1 * rm1);
+		return (a_n * g_np1 - x_1) / rm1 - d*(g_np1 - g_2) / (rm1 * rm1);
 	}
 	
 }
